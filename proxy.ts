@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { parse } from 'cookie';
 import { checkServerSession } from './lib/api/serverApi';
 
 const privateRoutes = ['/profile', '/notes'];
 const publicRoutes = ['/sign-in', '/sign-up'];
+
+function parseCookieAttributes(cookieStr: string) {
+  const parts = cookieStr.split(';').map((p) => p.trim());
+  const [nameValue, ...attrs] = parts;
+  const [name, value] = nameValue.split('=');
+  const attributes: Record<string, string> = {};
+  for (const attr of attrs) {
+    const [key, val] = attr.split('=');
+    attributes[key.trim().toLowerCase()] = val?.trim() ?? '';
+  }
+  return { name: name.trim(), value: value?.trim() ?? '', attributes };
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,14 +34,14 @@ export async function proxy(request: NextRequest) {
         if (setCookie) {
           const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
           for (const cookieStr of cookieArray) {
-            const parsed = parse(cookieStr);
+            const { name, value, attributes } = parseCookieAttributes(cookieStr);
             const options = {
-              expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-              path: parsed.Path,
-              maxAge: Number(parsed['Max-Age']),
+              expires: attributes.expires ? new Date(attributes.expires) : undefined,
+              path: attributes.path || '/',
+              maxAge: attributes['max-age'] ? Number(attributes['max-age']) : undefined,
             };
-            if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
-            if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
+            if (name === 'accessToken') cookieStore.set('accessToken', value, options);
+            if (name === 'refreshToken') cookieStore.set('refreshToken', value, options);
           }
           if (isPublicRoute) {
             return NextResponse.redirect(new URL('/', request.url), {

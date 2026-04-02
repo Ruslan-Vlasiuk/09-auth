@@ -1,9 +1,9 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import Modal from "../../../../components/Modal/Modal";
-import { fetchNoteById } from "../../../../lib/api/notes";
-import css from "./NotePreview.module.css";
+import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import Modal from '../../../../components/Modal/Modal';
+import { fetchNoteById } from '../../../../lib/api/clientApi';
+import css from './NotePreview.module.css';
 
 interface NotePreviewProps {
   id: string;
@@ -13,7 +13,7 @@ export default function NotePreview({ id }: NotePreviewProps) {
   const router = useRouter();
 
   const { data: note, isLoading, isError } = useQuery({
-    queryKey: ["note", id],
+    queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
     refetchOnMount: false,
   });
@@ -48,7 +48,7 @@ export default function NotePreview({ id }: NotePreviewProps) {
           <span className={css.tag}>{note.tag}</span>
           <p className={css.content}>{note.content}</p>
           <p className={css.date}>
-            {new Date(note.createdAt).toISOString().split("T")[0]}
+            {new Date(note.createdAt).toISOString().split('T')[0]}
           </p>
           <button className={css.backBtn} onClick={handleClose}>
             ← Back

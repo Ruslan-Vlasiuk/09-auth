@@ -1,14 +1,8 @@
 import { nextServer } from './api';
 import type { Note, NoteTag } from '../../types/note';
+import type { User } from '../../types/user';
 
-export interface User {
-  id: string;
-  email: string;
-  username?: string;
-  avatar?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { User };
 
 export interface FetchNotesResponse {
   notes: Note[];
