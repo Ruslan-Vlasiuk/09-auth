@@ -21,8 +21,9 @@ export default function SignUp() {
       } else {
         setError('Registration failed');
       }
-    } catch {
-      setError('Registration failed. Please try again.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      setError(message);
     }
   };
 

@@ -21,8 +21,9 @@ export default function SignIn() {
       } else {
         setError('Invalid email or password');
       }
-    } catch {
-      setError('Invalid email or password');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid email or password';
+      setError(message);
     }
   };
 
